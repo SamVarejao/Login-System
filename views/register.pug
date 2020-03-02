@@ -1,0 +1,16 @@
+p Registration 
+
+form(action="/register", method="post")
+    div 
+        label(for="username") Username:
+        input(type="text", name="username", value=userValue)
+    div
+        label(for="password") Password:
+        input(type="text", name="password", value=passwordValue)
+    div
+        label(for="password2") Repeat the password:
+        input(type="text", name="password2", value=password2Value2)
+    div 
+        input(type="submit", value="Register")
+    div 
+        p#pug-variable= errors
