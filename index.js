@@ -4,7 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const passport = require("passport");
 const bcrypt = require("bcrypt");
-const express
+const session = require("express-session");
 
 const app = express();
 
@@ -22,15 +22,31 @@ mongoose
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log(err));
 
+app.use(
+  session({
+    secret: "secret",
+    resave: true,
+    saveUninitialized: true
+  })
+);
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+require("./passport/strategy")(passport);
+const {
+  forwardAuthenticated,
+  ensureAuthenticated
+} = require("./passport/authenticate");
 //Routes ----------------------------------
 const User = require("./models/User"); //load user model
 
 //GET home
-app.route("/").get((req, res) => {
+app.route("/").get(forwardAuthenticated, (req, res) => {
   res.render("homepage");
 });
 // GET resgister
-app.route("/register").get((req, res) => {
+app.route("/register").get(forwardAuthenticated, (req, res) => {
   res.render("register");
 });
 //POST register
@@ -93,13 +109,26 @@ app.route("/register").post((req, res) => {
   }
 });
 // GET login
-app.route("/login").get((req, res) => {
+app.route("/login").get(forwardAuthenticated, (req, res) => {
   res.render("login");
 });
 //POST login
-app.route("/login").post((req, res)=>{
-
+app.route("/login").post((req, res, next) => {
+  passport.authenticate("local", {
+    successRedirect: "/profile",
+    failureRedirect: "/"
+  })(req, res, next);
 });
+
+app.route("/profile").get(ensureAuthenticated, (req, res) => {
+  res.render("profile");
+});
+
+app.route("/logout").get((req, res) => {
+  req.logout();
+  res.redirect("/");
+});
+
 //--------------------------*/
 
 const port = process.env.PORT || 5000;
