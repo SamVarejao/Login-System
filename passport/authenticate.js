@@ -3,6 +3,7 @@ module.exports = {
     if (req.isAuthenticated()) {
       return next();
     }
+    req.flash("error", "User must be logged in");
     res.redirect("/login");
   },
   forwardAuthenticated: function(req, res, next) {

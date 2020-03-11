@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const passport = require("passport");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
+const flash = require('connect-flash');
 
 const app = express();
 
@@ -29,6 +30,8 @@ app.use(
     saveUninitialized: true
   })
 );
+// Connect flash
+app.use(flash());
 
 // Passport middleware
 app.use(passport.initialize());
@@ -38,6 +41,7 @@ const {
   forwardAuthenticated,
   ensureAuthenticated
 } = require("./passport/authenticate");
+
 //Routes ----------------------------------
 const User = require("./models/User"); //load user model
 
@@ -110,13 +114,15 @@ app.route("/register").post((req, res) => {
 });
 // GET login
 app.route("/login").get(forwardAuthenticated, (req, res) => {
-  res.render("login");
+  res.render("login", {message:req.flash("error")});
 });
 //POST login
 app.route("/login").post((req, res, next) => {
   passport.authenticate("local", {
     successRedirect: "/profile",
-    failureRedirect: "/"
+    failureRedirect: "/login",
+    failureFlash: true,
+    failureFlash:'Login failed'
   })(req, res, next);
 });
 
@@ -126,7 +132,8 @@ app.route("/profile").get(ensureAuthenticated, (req, res) => {
 
 app.route("/logout").get((req, res) => {
   req.logout();
-  res.redirect("/");
+  req.flash("error","User logged out.")
+  res.redirect("/login");
 });
 
 //--------------------------*/
