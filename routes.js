@@ -23,6 +23,7 @@ router.post("/register", (req, res) => {
   const { username, password, password2 } = req.body;
   let errors = [];
 
+//Conditions ---------------------------------------
   if (!username || !password || !password2) {
     errors.push(" Please enter all fields");
   }
@@ -43,9 +44,9 @@ router.post("/register", (req, res) => {
       password2Value2: password2
     });
   } else {
-    User.findOne({ name: username }).then(user => {
-      if (user) {
-        errors.push(" User already exists");
+    User.findOne({ name: username }).then(user => { //name (comes from mongoose schema)
+      if (user) {                                   //userValue (is part of the form)
+        errors.push(" User already exists");        //username is a value of the req body
         res.render("register", {
           errors,
           userValue: username,
