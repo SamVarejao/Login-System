@@ -43,7 +43,7 @@ router.post("/register", (req, res) => {
       passwordValue: password,
       password2Value2: password2
     });
-  } else {
+  } else {//
     User.findOne({ name: username }).then(user => { //name (comes from mongoose schema)
       if (user) {                                   //userValue (is part of the form)
         errors.push(" User already exists");        //username is a value of the req body
