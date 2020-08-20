@@ -10,7 +10,7 @@
   "author": "Samuel C. Varejão",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^3.0.8",
+    "bcrypt": "^5.0.0",
     "connect-flash": "^0.1.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
